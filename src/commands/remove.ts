@@ -8,7 +8,7 @@ export default async function remove(msg: Message, match: RegExpMatchArray | nul
   const chatId = msg.chat.id;
 
   if (!match) {
-    return;
+    return bot.sendMessage(chatId, "Нет такого id");
   }
 
   const id = +match[1];
