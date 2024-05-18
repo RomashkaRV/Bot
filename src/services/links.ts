@@ -9,16 +9,20 @@ import numberFormat from "@functions/numberFormat";
 
 export default class Links {
 
-  static async get(link: string) {
+  static async get(chatId: number, link: string) {
     return LinkModel.findOne({
       where: {
-        link
+        link,
+        chatId: chatId.toString()
       }
     });
   }
 
-  static async list() {
+  static async list(chatId: number) {
     return LinkModel.findAll({
+      where: {
+        chatId: chatId.toString()
+      },
       include: [{
         model: LinkInfoModel,
         as: "info"
@@ -38,7 +42,7 @@ export default class Links {
     const { name, price, image } = await ParseService.getInfo(link);
 
     const linkModel = await LinkModel.create({
-      chatId,
+      chatId: chatId.toString(),
       link,
       name,
       image
@@ -56,17 +60,53 @@ export default class Links {
     };
   }
 
-  static async remove(id: number) {
-    return LinkModel.destroy({
-      cascade: true,
-      where: {
-        id
+  static async remove(chatId: number, id: number) {
+    try {
+      const link = await LinkModel.findOne({
+        where: {
+          id,
+          chatId: chatId.toString()
+        }
+      });
+
+      if (!link) {
+        throw new Error("Ссылка не найдена или не пренадлежит этому чату");
       }
-    });
+
+      await LinkModel.destroy({
+        cascade: true,
+        where: {
+          id
+        }
+      });
+
+      return `Ссылка с ID ${id} была удалена.`;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message);
+      } else {
+        throw new Error("An unknown error occurred");
+      }
+    }
   }
 
+
+
   static async checkPrices() {
-    const list = await Links.list();
+    const list = await LinkModel.findAll({
+      include: [{
+        model: LinkInfoModel,
+        as: "info"
+      }],
+      order: [
+        [
+          {
+            model: LinkInfoModel,
+            as: "info"
+          }, 'id', 'ASC'
+        ]
+      ],
+    });
 
     await Promise.all(
       list.map(async (item) => {
@@ -111,5 +151,4 @@ export default class Links {
       })
     );
   }
-
 }

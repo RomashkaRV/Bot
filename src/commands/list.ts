@@ -7,7 +7,7 @@ import { Message } from "node-telegram-bot-api";
 export default async function list(msg: Message) {
   const chatId = msg.chat.id;
 
-  const list = await Links.list();
+  const list = await Links.list(chatId);
 
   const text = list.map((item) => `[${item.get("name")}](${item.get("link")})`);
 

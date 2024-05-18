@@ -15,10 +15,10 @@ export default async function watch(msg: Message, match: RegExpMatchArray | null
 
   const link = match[1];
 
-  const getLink = await Links.get(link);
+  const getLink = await Links.get(chatId, link);
 
   if (!getLink) {
-    const [ linkInfo ] = await Promise.all([
+    const [linkInfo] = await Promise.all([
       Links.create(chatId, link),
       bot.sendMessage(chatId, "Минуточку, пьем 🍻 и парсим сайтец 🙈")
     ]);

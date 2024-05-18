@@ -13,7 +13,14 @@ export default async function remove(msg: Message, match: RegExpMatchArray | nul
 
   const id = +match[1];
 
-  await Links.remove(id);
-
-  return bot.sendMessage(chatId, `Мы удалили ссылку с ID - ${id}`);
+  try {
+    const result = await Links.remove(chatId, id);
+    return bot.sendMessage(chatId, result);
+  } catch (error) {
+    if (error instanceof Error) {
+      return bot.sendMessage(chatId, `Ошибка: ${error.message}`);
+    } else {
+      return bot.sendMessage(chatId, "Произошла неизвестная ошибка");
+    }
+  }
 }
