@@ -47,6 +47,12 @@ export default class InfoService {
                 text: "Изменение цены",
                 callback_data: `/info_more ${infoId}`
               }
+            ],
+            [
+              {
+                text: "Удалить",
+                callback_data: `/info_remove ${infoId}`
+              }
             ]
           ]
         }
@@ -91,5 +97,33 @@ export default class InfoService {
         reply_to_message_id: replyId
       }
     );
+  }
+
+  static async remove(chatId: number, infoId: string | number) {
+    const link = await LinkModel.findOne({
+      include: [{
+        model: LinkInfoModel,
+        as: "info"
+      }],
+      where: {
+        id: infoId
+      }
+    });
+
+    if (!link) {
+      return bot.sendMessage(chatId, `Ссылка с ID - ${infoId} не найдена.`);
+    }
+
+    // Удаляем все связанные записи из LinkInfo
+    await LinkInfoModel.destroy({
+      where: {
+        linkId: infoId
+      }
+    });
+
+    // Удаляем запись из Link
+    await link.destroy();
+
+    return bot.sendMessage(chatId, `Ссылка с ID - ${infoId} была успешно удалена.`);
   }
 }

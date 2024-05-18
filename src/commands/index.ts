@@ -59,4 +59,14 @@ bot.on('callback_query', async (callbackQuery) => {
 
     return InfoService.more(callbackQuery.message?.chat.id, replyId, id);
   }
+
+  if (/\/info_remove (.+)/.test(data)) {
+    const id = data.split(" ")[1];
+
+    if (!callbackQuery.message) {
+      return;
+    }
+
+    return InfoService.remove(callbackQuery.message?.chat.id, id);
+  }
 });
