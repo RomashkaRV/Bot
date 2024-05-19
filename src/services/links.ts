@@ -90,8 +90,6 @@ export default class Links {
     }
   }
 
-
-
   static async checkPrices() {
     const list = await LinkModel.findAll({
       include: [{
