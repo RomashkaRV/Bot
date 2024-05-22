@@ -10,23 +10,26 @@ export default async function watch(msg: Message, match: RegExpMatchArray | null
   const chatId = msg.chat.id;
 
   if (!match) {
+    await bot.sendMessage(chatId, "Ошибка: ссылка некорректная.");
     return;
   }
 
   const link = match[1];
 
-  const getLink = await Links.get(chatId, link);
+  try {
+    const getLink = await Links.get(chatId, link);
 
-  if (!getLink) {
-    const [linkInfo] = await Promise.all([
-      Links.create(chatId, link),
-      bot.sendMessage(chatId, "Минуточку, пьем 🍻 и парсим сайтец 🙈")
-    ]);
+    if (!getLink) {
+      const [linkInfo] = await Promise.all([
+        Links.create(chatId, link),
+        bot.sendMessage(chatId, "Минуточку, пьем 🍻 и парсим сайтец 🙈")
+      ]);
 
-    await bot.sendMessage(chatId, `Теперь я наблюдаю за ${linkInfo.name}\nНачальная цена: ${numberFormat(+linkInfo.price)} золотых монет`);
-
-    return;
+      await bot.sendMessage(chatId, `Теперь я наблюдаю за ${linkInfo.name}\nНачальная цена: ${numberFormat(+linkInfo.price)} золотых монет`);
+    } else {
+      await bot.sendMessage(chatId, `Ты золотая рыбка? ${getLink.get("name")} уже существует!`);
+    }
+  } catch (error) {
+    await bot.sendMessage(chatId, `Ошибка!`);
   }
-
-  await bot.sendMessage(chatId, `Ты золотая рыбка? ${getLink.get("name")} уже существует!`);
 }

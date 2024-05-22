@@ -20,7 +20,8 @@ export default class InfoService {
         ]
       ],
       where: {
-        id: infoId
+        id: infoId,
+        chatId: chatId.toString()
       }
     });
 

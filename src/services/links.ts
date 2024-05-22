@@ -1,10 +1,7 @@
 import { bot } from "@commands";
-
 import LinkInfoModel from "@models/link.info.model";
 import LinkModel from "@models/link.model";
-
 import ParseService from "@services/parse";
-
 import numberFormat from "@functions/numberFormat";
 
 export default class Links {
@@ -40,6 +37,10 @@ export default class Links {
 
   static async create(chatId: number, link: string) {
     const { name, price, image } = await ParseService.getInfo(link);
+
+    if (!name || !price || price === "Price not available") {
+      throw new Error("Некорректная ссылка или данные недоступны.");
+    }
 
     const linkModel = await LinkModel.create({
       chatId: chatId.toString(),
