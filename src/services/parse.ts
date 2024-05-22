@@ -10,7 +10,11 @@ export default class ParseService {
 
       const name = $('h1.title_card_product:first').text();
 
-      const priceText = $('p.price_title_product:first').text().replace("—", "").replace(/\s/g, '').replace("Р", '');
+      const priceText = $(
+        'p.price_title_product:first').text()
+        .replace("—", "")
+        .replace(/\s/g, '')
+        .replace("Р", '');
 
       let price: number | string = "Price not available";
 
@@ -29,7 +33,7 @@ export default class ParseService {
         image
       };
     } catch (error) {
-      throw new Error("Ошибка при парсинге данных с сайта.");
+      throw new Error(`Ошибка: ${error}`);
     }
   }
 }

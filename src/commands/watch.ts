@@ -30,6 +30,6 @@ export default async function watch(msg: Message, match: RegExpMatchArray | null
       await bot.sendMessage(chatId, `Ты золотая рыбка? ${getLink.get("name")} уже существует!`);
     }
   } catch (error) {
-    await bot.sendMessage(chatId, `Ошибка!`);
+    await bot.sendMessage(chatId, `⚠️Ошибка! Некорректная ссылка`);
   }
 }

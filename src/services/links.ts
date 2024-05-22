@@ -38,9 +38,9 @@ export default class Links {
   static async create(chatId: number, link: string) {
     const { name, price, image } = await ParseService.getInfo(link);
 
-    if (!name || !price || price === "Price not available") {
-      throw new Error("Некорректная ссылка или данные недоступны.");
-    }
+    // if (!name || !price || price === "Price not available") {
+    //   throw new Error("Некорректная ссылка или данные недоступны.");
+    // }
 
     const linkModel = await LinkModel.create({
       chatId: chatId.toString(),

@@ -6,6 +6,10 @@ import moment from "moment";
 
 export default class InfoService {
   static async get(chatId: number, infoId: string | number) {
+    if (isNaN(Number(infoId))) {
+      return bot.sendMessage(chatId, "⚠️ Ошибка: некорректный ID.");
+    }
+
     const link = await LinkModel.findOne({
       include: [{
         model: LinkInfoModel,
@@ -20,13 +24,12 @@ export default class InfoService {
         ]
       ],
       where: {
-        id: infoId,
-        chatId: chatId.toString()
+        id: infoId
       }
     });
 
-    if (!link) {
-      return;
+    if (!link || link.get("chatId") !== chatId.toString()) {
+      return bot.sendMessage(chatId, "⚠️ Ошибка: ссылка не найдена.");
     }
 
     const onlyPrices = [...link.get("info").map((item) => item.get("price"))];
@@ -62,6 +65,10 @@ export default class InfoService {
   }
 
   static async more(chatId: number, replyId: number, infoId: string | number) {
+    if (isNaN(Number(infoId))) {
+      return bot.sendMessage(chatId, "⚠️ Ошибка: некорректный ID.");
+    }
+
     const link = await LinkModel.findOne({
       include: [{
         model: LinkInfoModel,
@@ -80,8 +87,8 @@ export default class InfoService {
       }
     });
 
-    if (!link) {
-      return;
+    if (!link || link.get("chatId") !== chatId.toString()) {
+      return bot.sendMessage(chatId, "⚠️ Ошибка: ссылка не найдена.");
     }
 
     const prices = link.get("info").map((item) => {
@@ -101,6 +108,10 @@ export default class InfoService {
   }
 
   static async remove(chatId: number, infoId: string | number) {
+    if (isNaN(Number(infoId))) {
+      return bot.sendMessage(chatId, "⚠️ Ошибка: некорректный ID.");
+    }
+
     const link = await LinkModel.findOne({
       include: [{
         model: LinkInfoModel,
@@ -111,8 +122,8 @@ export default class InfoService {
       }
     });
 
-    if (!link) {
-      return bot.sendMessage(chatId, `Ссылка с ID - ${infoId} не найдена.`);
+    if (!link || link.get("chatId") !== chatId.toString()) {
+      return bot.sendMessage(chatId, "⚠️ Ошибка: ссылка не найдена.");
     }
 
     // Удаляем все связанные записи из LinkInfo
