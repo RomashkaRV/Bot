@@ -1,18 +1,21 @@
 import Links from "@services/links";
-
 import { bot } from "@commands";
-
 import { Message } from "node-telegram-bot-api";
+
+function numberToEmoji(number: number) {
+  const emojiDigits = ["0️⃣", "1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣"];
+  return number.toString().split("").map(digit => emojiDigits[parseInt(digit)]).join("");
+}
 
 export default async function list(msg: Message) {
   const chatId = msg.chat.id;
 
   const list = await Links.list(chatId);
 
-  const text = list.map((item) => `[${item.get("name")}](${item.get("link")})`);
+  const text = list.map((item, index) => `${numberToEmoji(index + 1)} [${item.get("name")}](${item.get("link")})`);
 
-  const buttons = list.map((item) => ({
-    text: item.get("id"),
+  const buttons = list.map((item, index) => ({
+    text: numberToEmoji(index + 1),
     callback_data: `/info ${item.get("id")}`
   }));
 
