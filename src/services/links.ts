@@ -6,6 +6,14 @@ import numberFormat from "@functions/numberFormat";
 
 export default class Links {
 
+  static async checkLink(link: string) {
+    const { name, price, image } = await ParseService.getInfo(link);
+    if (!name || !price) {
+      throw new Error('Некорректная ссылка');
+    }
+    return { name, price, image, link };
+  }
+
   static async get(chatId: number, link: string) {
     return LinkModel.findOne({
       where: {
@@ -35,12 +43,17 @@ export default class Links {
     });
   }
 
-  static async create(chatId: number, link: string) {
-    const { name, price, image } = await ParseService.getInfo(link);
+  static async create(chatId: number, link: string, linkInfo: {
+    image: string | undefined;
+    price: string | number;
+    name: string;
+    link: string
+  }) {
+    const { name, price, image } = linkInfo;
 
-    // if (!name || !price || price === "Price not available") {
-    //   throw new Error("Некорректная ссылка или данные недоступны.");
-    // }
+    if (!link || !name || !price) {
+      throw new Error('Missing required link information');
+    }
 
     const linkModel = await LinkModel.create({
       chatId: chatId.toString(),
@@ -71,7 +84,7 @@ export default class Links {
       });
 
       if (!link) {
-        throw new Error("Ссылка не найдена или не пренадлежит этому чату");
+        throw new Error("Ссылка не найдена или не принадлежит этому чату");
       }
 
       await LinkModel.destroy({
