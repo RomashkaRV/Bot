@@ -17,12 +17,13 @@ export default async function watch(msg: Message, match: RegExpMatchArray | null
   const link = match[1];
 
   try {
+    bot.sendMessage(chatId, "Минуточку, пьем 🍻 и парсим сайтец 🙈")
+
     const getLink = await Links.get(chatId, link);
 
     if (!getLink) {
       const [linkInfo] = await Promise.all([
-        Links.create(chatId, link),
-        bot.sendMessage(chatId, "Минуточку, пьем 🍻 и парсим сайтец 🙈")
+        Links.create(chatId, link)
       ]);
 
       await bot.sendMessage(chatId, `Теперь я наблюдаю за ${linkInfo.name}\nНачальная цена: ${numberFormat(+linkInfo.price)} золотых монет`);
